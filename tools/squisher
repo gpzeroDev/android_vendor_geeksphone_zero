@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+# Squish a otapackage for distribution
+#
+
+OUT_TARGET_HOST=linux-x86
+OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-$TARGET_BUILD_VARIANT.$LOGNAME.zip
+QUIET=-q
+REPACK=$OUT/repack.d
+REPACKOTA=$REPACK/ota
+
+CORES=$( cat /proc/cpuinfo | grep -c processor )
+
+. mensajes.sh
+
+# Verificación de entorno de desarrollo operativo
+if [ -z "$OUT" -o ! -d "$OUT" ]; then
+  msgErr "$0 solo funciona con un entorno completo de desarrollo. $OUT debe existir."
+  exit 1
+fi
+
+# Se verifica que existe el fichero inicial.
+if [ ! -f "$OTAPACKAGE" ]; then
+  msgErr "$OTAPACKAGE no existe!"
+  exit 1
+fi
+
+# Elimina cualquier directorio de un trabajo antiguo
+clear
+msgInfo "Limpiando el entorno..."
+rm -rf $REPACK
+mkdir -p $REPACK
+
+# Descomprime el otapackage y ejecuta opticharge en todos los apks
+mkdir $REPACKOTA
+
+cd $REPACKOTA
+msgStatus "Desempaquetando $OTAPACKAGE..."
+unzip $QUIET $OTAPACKAGE
+  
+# Recoloca su
+cp -a $REPACKOTA/system/xbin $REPACK/_xbin/
+rm -f $REPACK/_xbin/su $REPACKOTA/system/bin/su
+mv $REPACKOTA/system/xbin/su $REPACKOTA/system/bin/su
+chmod -R 555 $REPACK/_xbin/*
+
+# Crea enlaces simbolicos para su.
+ln -s ../bin/su $REPACK/_xbin/su
+
+# Eliminar drivers inalambricos
+rm -rf $REPACKOTA/system/lib/modules/*/kernel/drivers/net
+
+# Se introduce recovery CWM
+cp -R $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/recovery/* $REPACKOTA/recovery
+
+OUTFILE=$OUT/update.zip
+
+cd $REPACKOTA
+
+msgStatus "Comprimiendo ROM"
+zip $QUIET -r -9 $REPACK/update.zip . 
+
+$ANDROID_BUILD_TOP/vendor/geeksphone/zero/tools/firmar.sh $REPACK/update.zip $OUTFILE
+if [ "$?" -ne 0 ]; then
+    msgErr "Error al obtener el fichero firmado $OUTFILE"
+    exit 1
+fi
+
+msgStatus "Limpiando el entorno..."
+rm -rf $REPACK
+
+exit 0
