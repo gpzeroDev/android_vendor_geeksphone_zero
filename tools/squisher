@@ -37,21 +37,13 @@ mkdir $REPACKOTA
 cd $REPACKOTA
 msgStatus "Desempaquetando $OTAPACKAGE..."
 unzip $QUIET $OTAPACKAGE
-  
-# Recoloca su
-cp -a $REPACKOTA/system/xbin $REPACK/_xbin/
-rm -f $REPACK/_xbin/su $REPACKOTA/system/bin/su
-mv $REPACKOTA/system/xbin/su $REPACKOTA/system/bin/su
-chmod -R 555 $REPACK/_xbin/*
-
-# Crea enlaces simbolicos para su.
-ln -s ../bin/su $REPACK/_xbin/su
-
-# Eliminar drivers inalambricos
-rm -rf $REPACKOTA/system/lib/modules/*/kernel/drivers/net
 
 # Se introduce recovery CWM
-cp -R $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/recovery/* $REPACKOTA/recovery
+rm -rf $REPACKOTA/recovery
+cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/recovery.img $REPACKOTA
+
+# Se introduce updater-script propio
+cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/updater-script $REPACKOTA/META-INF/com/google/android/updater-script
 
 OUTFILE=$OUT/update.zip
 
