@@ -49,7 +49,6 @@ cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/updater-script $REPACKOTA/
 rm $REPACKOTA/system/app/SpeechRecorder.apk
 rm $REPACKOTA/system/app/Development.apk
 rm $REPACKOTA/system/app/Term.apk
-rm $REPACKOTA/system/app/SpareParts.apk
 
 OUTFILE=$OUT/update.zip
 
