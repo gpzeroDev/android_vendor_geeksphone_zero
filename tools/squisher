@@ -49,12 +49,13 @@ cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/updater-script $REPACKOTA/
 rm $REPACKOTA/system/app/SpeechRecorder.apk
 rm $REPACKOTA/system/app/Development.apk
 rm $REPACKOTA/system/app/Term.apk
+rm $REPACKOTA/system/app/SpareParts.apk
 
 OUTFILE=$OUT/update.zip
 
 cd $REPACKOTA
 
-msgStatus "Comprimiendo ROM"
+msgStatus "Comprimiendo ROM en update.zip"
 zip $QUIET -r -9 $REPACK/update.zip . 
 
 $ANDROID_BUILD_TOP/vendor/geeksphone/zero/tools/firmar.sh $REPACK/update.zip $OUTFILE
@@ -63,7 +64,27 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
+msgStatus "Generando imgs para fastboot..."
+mkdir $OUT/update-fastboot
+cd $OUT
+
+# Se procede a eliminar apps que no se desean en Stock
+rm system/app/SpeechRecorder.apk
+rm system/app/Development.apk
+rm system/app/Term.apk
+rm system/app/SpareParts.apk
+
+# Se procede a generar el System y recopilar el resto de imgs
+$OUT/../../../host/linux-x86/bin/mkyaffs2image -f system update-fastboot/system.img
+cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/recovery.img $OUT/update-fastboot/recovery.img
+cp $OUT/boot.img $OUT/update-fastboot/boot.img
+cd $OUT/update-fastboot
+
+msgStatus "Empaquetando en update-fastboot.zip..."
+zip $QUIET -r -9 $OUT/update-fastboot.zip .
+
 msgStatus "Limpiando el entorno..."
 rm -rf $REPACK
+rm -rf $OUT/update-fastboot
 
 exit 0
