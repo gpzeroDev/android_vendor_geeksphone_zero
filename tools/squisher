@@ -83,6 +83,10 @@ cd $OUT/update-fastboot
 msgStatus "Empaquetando en update-fastboot.zip..."
 zip $QUIET -r -9 $OUT/update-fastboot.zip .
 
+# Crear md5 para update-fastboot
+cd $OUT
+md5sum update-fastboot.zip > update-fastboot.zip.md5sum
+
 msgStatus "Limpiando el entorno..."
 rm -rf $REPACK
 rm -rf $OUT/update-fastboot

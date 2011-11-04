@@ -33,11 +33,9 @@ if [ "$?" -ne 0 ]; then
 fi
 
 # Crear md5 para el paquete firmado
-
 img=`basename $2`
 cd `dirname $2`
 md5sum $img > $img.md5sum
 echo "Paquete creado: $2"
-echo `cat $img.md5sum`
 
 exit 0
