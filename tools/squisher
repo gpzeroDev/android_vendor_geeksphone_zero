@@ -40,16 +40,17 @@ unzip $QUIET $OTAPACKAGE
 
 # Se introduce recovery CWM
 rm -rf $REPACKOTA/recovery
-cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/recovery.img $REPACKOTA
+cp $OUT/recovery.img $REPACKOTA
 
 # Se introduce updater-script propio
 cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/updater-script $REPACKOTA/META-INF/com/google/android/updater-script
 
 # Se procede a eliminar apps que no se desean en Stock
-rm $REPACKOTA/system/app/SpeechRecorder.apk
-rm $REPACKOTA/system/app/Development.apk
-rm $REPACKOTA/system/app/Term.apk
-rm $REPACKOTA/system/app/SpareParts.apk
+rm $REPACKOTA/system/app/Development.*
+rm $REPACKOTA/system/app/Term.*
+rm $REPACKOTA/system/app/SpareParts.*
+rm $REPACKOTA/system/app/Provision.*
+rm $REPACKOTA/system/app/QuickSearchBox.*
 
 OUTFILE=$OUT/update.zip
 
@@ -69,14 +70,15 @@ mkdir $OUT/update-fastboot
 cd $OUT
 
 # Se procede a eliminar apps que no se desean en Stock
-rm system/app/SpeechRecorder.apk
-rm system/app/Development.apk
-rm system/app/Term.apk
-rm system/app/SpareParts.apk
+rm system/app/Development.*
+rm system/app/Term.*
+rm system/app/SpareParts.*
+rm system/app/Provision.*
+rm system/app/QuickSearchBox.*
 
 # Se procede a generar el System y recopilar el resto de imgs
 $OUT/../../../host/linux-x86/bin/mkyaffs2image -f system update-fastboot/system.img
-cp $ANDROID_BUILD_TOP/device/geeksphone/zero/prebuilt/recovery.img $OUT/update-fastboot/recovery.img
+cp $OUT/recovery.img $OUT/update-fastboot/recovery.img
 cp $OUT/boot.img $OUT/update-fastboot/boot.img
 cd $OUT/update-fastboot
 
