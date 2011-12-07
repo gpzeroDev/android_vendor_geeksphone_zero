@@ -4,7 +4,8 @@
 #
 
 OUT_TARGET_HOST=linux-x86
-OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-$TARGET_BUILD_VARIANT.$LOGNAME.zip
+VERSION=$( grep -e '^ro\.build\.version\.incremental' $OUT/system/build.prop | tail -1 | sed -n -e's/^.*=//p'  )
+OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-$VERSION.zip
 QUIET=-q
 REPACK=$OUT/repack.d
 REPACKOTA=$REPACK/ota
